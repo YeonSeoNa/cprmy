@@ -1,0 +1,257 @@
+import React, { useEffect, useState } from "react";
+import styled from "styled-components";
+import axios from "axios";
+
+const ComunitySection = styled.div`
+  border-top: 87px solid pink;
+  .row {
+    padding: 50px 0;
+  }
+  ul {
+    max-height: 300px;
+    overflow-y: auto;
+    border: 1px solid #000;
+  }
+`;
+
+const Community = () => {
+  const [place, setPlace] = useState([]);
+  // const [searchValue, setSearchValue] = useState("");
+  // const [searchResults, setSearchResults] = useState([]);
+  const [city, setCity] = useState("서울특별시");
+
+
+  // const [districts, setDistricts] = useState([]);
+  // const [selectedDistrict, setSelectedDistrict] = useState("");
+
+  const getData = async (city) => {
+    try {
+      const response = await axios.get(
+        `https://apis.data.go.kr/B552657/AEDInfoInqireService/getAedLcinfoInqire?serviceKey=vDb2EVp9Q%2BES37mSsmcEHxZ%2Bydtef5ex9X9Zw2OYTPcRZxdRJalPPZSuMGBzagcEZbG8B%2FRl4cEl33c19P74Ug%3D%3D&Q0=${city}&pageNo=1&numOfRows=100`
+      );
+      console.log(response.data.response.body.items.item);
+      const placeData = response.data.response.body.items.item;
+      setPlace(placeData);
+      // setSearchResults(placeData);
+    } catch (error) {
+      console.log(error);
+    }
+  };
+
+  const handleCityChange = (event) => {
+    setCity(event.target.value);
+  };
+
+ 
+  useEffect(() => {
+    getData(city);
+  }, [city]);
+
+  return (
+    <ComunitySection>
+      <div className="row">
+        <h2>전국 위치</h2>
+        <div>
+          <label htmlFor="citySelect">지역:</label>
+          <select id="citySelect" value={city} onChange={handleCityChange}>
+            <option value="서울특별시">서울특별시</option>
+            <option value="경기도">경기도</option>
+            <option value="부산광역시">부산광역시</option>
+            <option value="대구광역시">대구광역시</option>
+            <option value="인천광역시">인천광역시</option>
+            <option value="울산광역시">울산광역시</option>
+            <option value="광주광역시">광주광역시</option>
+            <option value="대전광역시">대전광역시</option>
+            <option value="세종특별자치시">세종특별자치시</option>
+            <option value="제주특별자치도">제주특별자치도</option>
+          </select>
+        </div>
+        <ul>
+          {place.map((data, index) => (
+            <li key={index}>{data.buildAddress}</li>
+          ))}
+        </ul>
+      </div>
+    </ComunitySection>
+  );
+};
+
+export default Community;
+
+
+
+
+
+
+
+==============================================================================
+
+
+
+
+import React, { useEffect, useState } from "react";
+import styled from "styled-components";
+import axios from "axios";
+
+const ComunitySection = styled.div`
+  border-top: 87px solid pink;
+  .row {
+    padding: 50px 0;
+  }
+  ul {
+    max-height: 300px;
+    overflow-y: auto;
+    border: 1px solid #000;
+  }
+`;
+
+const Community = () => {
+  const [place, setPlace] = useState([]);
+  const [city, setCity] = useState("서울특별시");
+  const [districts, setDistricts] = useState([]);
+  const [selectedDistrict, setSelectedDistrict] = useState("");
+
+  const getData = async (city) => {
+    try {
+      const response = await axios.get(
+        `https://apis.data.go.kr/B552657/AEDInfoInqireService/getAedLcinfoInqire?serviceKey=vDb2EVp9Q%2BES37mSsmcEHxZ%2Bydtef5ex9X9Zw2OYTPcRZxdRJalPPZSuMGBzagcEZbG8B%2FRl4cEl33c19P74Ug%3D%3D&Q0=${city}&pageNo=1&numOfRows=1000`
+      );
+      console.log(response.data.response.body.items.item);
+      const placeData = response.data.response.body.items.item;
+      setPlace(placeData);
+
+      // Extract unique districts from placeData
+      const uniqueDistricts = [...new Set(placeData.map((data) => data.buildAddress.split(" ")[1]))];
+      setDistricts(uniqueDistricts);
+    } catch (error) {
+      console.log(error);
+    }
+  };
+
+  const handleCityChange = (event) => {
+    const selectedCity = event.target.value;
+    setCity(selectedCity);
+    setSelectedDistrict(""); // Reset the selected district
+    getData(selectedCity);
+  };
+
+  const handleDistrictChange = (event) => {
+    setSelectedDistrict(event.target.value);
+  };
+
+  useEffect(() => {
+    getData(city);
+  }, [city]);
+
+  return (
+    <ComunitySection>
+      <div className="row">
+        <h2>전국 위치</h2>
+        <div>
+          <label htmlFor="citySelect">시/도:</label>
+          <select id="citySelect" value={city} onChange={handleCityChange}>
+            <option value="서울특별시">서울특별시</option>
+            <option value="경기도">경기도</option>
+            <option value="부산광역시">부산광역시</option>
+            <option value="대구광역시">대구광역시</option>
+            <option value="인천광역시">인천광역시</option>
+            <option value="울산광역시">울산광역시</option>
+            <option value="광주광역시">광주광역시</option>
+            <option value="대전광역시">대전광역시</option>
+            <option value="세종특별자치시">세종특별자치시</option>
+            <option value="제주특별자치도">제주특별자치도</option>
+          </select>
+        </div>
+
+        {districts.length > 0 && (
+          <div>
+            <label htmlFor="districtSelect">구:</label>
+            <select id="districtSelect" value={selectedDistrict} onChange={handleDistrictChange}>
+              <option value="">전체</option>
+              {districts.map((district, index) => (
+                <option key={index} value={district}>
+                  {district}
+                </option>
+              ))}
+            </select>
+          </div>
+        )}
+
+        <ul>
+          {place.map((data, index) => {
+            if (selectedDistrict === "" || data.buildAddress.includes(selectedDistrict)) {
+              return <li key={index}>{data.buildAddress}</li>;
+            }
+            return null;
+          })}
+        </ul>
+      </div>
+    </ComunitySection>
+  );
+};
+
+export default Community;
+
+
+
+
+
+
+==========================================================================================
+
+
+
+import React, {useState, useRef, useEffect} from 'react';
+import MapContainer from '../components/MapContainer'
+import styled from 'styled-components'
+
+const StoreBlock = styled.div`
+    border-top:87px solid purple;
+    .row {
+        padding:50px 0;
+        form {
+            display:flex; margin-bottom:20px;
+            input { padding:10px; width:50%; border-radius:5px 0px 0px 5px; 
+                outline:none; border:1px solid green; }
+            button { padding:10px; border-radius:0px 5px 5px 0px; background:green; 
+                color:#fff; border:1px solid green; }
+        }
+    }
+`
+
+const Store = () => {
+
+    const [inputText, setInputText] = useState('강남역 버거킹')
+    const [place, setPlace] = useState('강남역 버거킹')
+    const inputBox = useRef()
+
+    const onChange = (e)=>{
+        setInputText(e.target.value)
+        // console.log(e)
+    }
+
+    const onSubmit = (e)=>{
+        e.preventDefault()
+        setPlace(inputText)
+        setInputText('')
+        inputBox.current.focus()
+    }
+
+    useEffect(()=>{
+        inputBox.current.focus()
+    }, [])
+
+    return (
+        <StoreBlock>
+            <div className="row">
+                <form onSubmit={onSubmit}>
+                    <input ref={inputBox} type="text" placeholder="장소입력" onChange={onChange} value={inputText} />
+                    <button type="submit">검색</button>
+                </form>
+                <MapContainer searchPlace={place} />
+            </div>
+        </StoreBlock>
+    );
+};
+
+export default Store;
