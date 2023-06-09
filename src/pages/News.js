@@ -29,7 +29,7 @@ const Community = () => {
   const getData = async (city) => {
     try {
       const response = await axios.get(
-        `https://apis.data.go.kr/B552657/AEDInfoInqireService/getAedLcinfoInqire?serviceKey=vDb2EVp9Q%2BES37mSsmcEHxZ%2Bydtef5ex9X9Zw2OYTPcRZxdRJalPPZSuMGBzagcEZbG8B%2FRl4cEl33c19P74Ug%3D%3D&Q0=${city}&pageNo=1&numOfRows=1000`
+        `https://airna.herokuapp.com/https://apis.data.go.kr/B552657/AEDInfoInqireService/getAedLcinfoInqire?serviceKey=vDb2EVp9Q%2BES37mSsmcEHxZ%2Bydtef5ex9X9Zw2OYTPcRZxdRJalPPZSuMGBzagcEZbG8B%2FRl4cEl33c19P74Ug%3D%3D&Q0=${city}&pageNo=1&numOfRows=1000`
       );
       console.log(response.data.response.body.items.item);
       const placeData = response.data.response.body.items.item;
